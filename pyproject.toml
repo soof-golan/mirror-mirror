@@ -4,4 +4,20 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "betterproto>=2.0.0b7",
+    "faststream[redis]>=0.5.40",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "redis>=6.0.0",
+]
+
+[project.scripts]
+diffusion-server = "mirror_mirror.diffusion_server:app"
+
+[build-system]
+requires = ["uv_build>=0.7.3,<0.8.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+betterproto = { git = "https://github.com/danielgtaylor/python-betterproto", rev = "124613f55fa8ff62a460e1ad33c5c78723b703a0" }
