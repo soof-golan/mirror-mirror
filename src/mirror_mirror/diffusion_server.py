@@ -32,6 +32,10 @@ class Diffuser(ABC):
     def diffuse(self, frame: npt.NDArray[np.uint8]) -> npt.NDArray[np.uint8]:
         pass
 
+    @abstractmethod
+    def update_prompt(self, prompt: str) -> str:
+        pass
+
 
 class FakeDiffuser(Diffuser):
     def __init__(self):
@@ -82,3 +86,5 @@ def to_diffuse(
             return diffused
         case "prompt":
             diffuser.update_prompt(msg.msg.prompt)
+            return None
+    return None
