@@ -8,10 +8,11 @@ import numpy.typing as npt
 import faststream
 from faststream import FastStream, Depends
 from faststream.redis import RedisBroker, PubSub
-from faststream.redis.message import RedisMessage
 from pydantic_settings import BaseSettings
 
-from mirror_mirror.models import DiffuserMessage
+from mirror_mirror.common import log_errors, assert_unreachable
+from mirror_mirror.decode import decode_frame
+from mirror_mirror.models import CarrierMessage, FrameMessage, PromptMessage
 
 
 class Config(BaseSettings):
@@ -58,33 +59,32 @@ class FakeDiffuser(Diffuser):
 
 
 @cache
-def get_diffuser():
+def get_diffuser() -> FakeDiffuser:
     match config.mode:
         case "fake":
             return FakeDiffuser()
         case _:
-            raise NotImplementedError
+            return assert_unreachable()
 
 
 @broker.subscriber(channel=PubSub("frames:camera:{feed}", pattern=True))
 @broker.subscriber(channel=PubSub("prompts:*", pattern=True))
 @broker.publisher(channel="diffused_images")
+@log_errors
 def to_diffuse(
-    msg: DiffuserMessage,
-    _message: RedisMessage,
+    carrier: CarrierMessage,
     logger: faststream.Logger,
     feed: str = faststream.Path(),
     diffuser: Diffuser = Depends(get_diffuser),
 ):
-    match msg.msg.msg_type:
-        case "frame":
-            logger.info("feed %s. frame nbytes %s", feed, len(msg.msg.frame))
-            frame = cv2.imdecode(
-                np.frombuffer(msg.msg.frame, np.uint8), cv2.IMREAD_COLOR
-            )
+    match carrier.content:
+        case FrameMessage(frame=frame):
+            logger.info("feed %s. frame nbytes %s", feed, len(frame))
+            frame = decode_frame(frame)
             diffused = diffuser.diffuse(frame)
             return diffused
-        case "prompt":
-            diffuser.update_prompt(msg.msg.prompt)
+        case PromptMessage(prompt=prompt):
+            diffuser.update_prompt(prompt)
             return None
+
     return None

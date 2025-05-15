@@ -8,6 +8,7 @@ dependencies = [
     "betterproto>=2.0.0b7",
     "faststream[cli,redis]>=0.5.40",
     "opencv-python>=4.11.0.86",
+    "pillow>=11.2.1",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "redis>=6.0.0",

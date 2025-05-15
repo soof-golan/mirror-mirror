@@ -1,13 +1,15 @@
 import logging
 from contextlib import AsyncExitStack
-
 import cv2
-import numpy as np
 from faststream.redis import RedisBroker
 from pydantic_settings import BaseSettings
 from tenacity import retry, retry_if_exception_type, wait_random
 
-from mirror_mirror.models import FrameMessage, DiffuserMessage
+from mirror_mirror.common import log_errors
+from mirror_mirror.decode import encode_frame
+from mirror_mirror.models import FrameMessage, CarrierMessage
+
+logger = logging.getLogger(__name__)
 
 
 class Config(BaseSettings):
@@ -18,15 +20,8 @@ class Config(BaseSettings):
 config = Config()
 
 
-async def encode_frame(frame: np.ndarray) -> bytes:
-    """Encode OpenCV frame to JPEG bytes"""
-    success, encoded = cv2.imencode(".jpg", frame)
-    if not success:
-        raise ValueError("Failed to encode frame")
-    return encoded.tobytes()
-
-
 @retry(retry=retry_if_exception_type(), wait=wait_random(max=5))
+@log_errors
 async def main():
     async with AsyncExitStack() as stack:
         broker = RedisBroker(url=config.redis_url)
@@ -41,11 +36,11 @@ async def main():
             if not success:
                 raise RuntimeError("Failed to capture frame")
 
-            encoded_frame = await encode_frame(frame)
+            encoded_frame = encode_frame(frame)
             message = FrameMessage(frame=encoded_frame)
 
             await broker.publish(
-                message={"msg": DiffuserMessage(msg=message)},
+                message={"carrier": CarrierMessage(content=message)},
                 channel=f"frames:camera:{config.camera_id}",
             )
 
