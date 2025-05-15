@@ -1,7 +1,9 @@
 from types import FunctionType
 from typing import NoReturn
 
-from mirror_mirror.camera_server import logger
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 def log_errors(func: FunctionType):
