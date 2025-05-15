@@ -40,7 +40,7 @@ async def main():
             message = FrameMessage(frame=encoded_frame)
 
             await broker.publish(
-                message={"carrier": CarrierMessage(content=message)},
+                message=CarrierMessage(content=message),
                 channel=f"frames:camera:{config.camera_id}",
             )
 
