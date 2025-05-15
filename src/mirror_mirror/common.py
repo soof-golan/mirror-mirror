@@ -1,3 +1,4 @@
+from functools import wraps
 from types import FunctionType
 from typing import NoReturn
 
@@ -7,6 +8,7 @@ logger = getLogger(__name__)
 
 
 def log_errors(func: FunctionType):
+    @wraps(func)
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
