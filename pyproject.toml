@@ -5,14 +5,22 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "accelerate>=1.7.0",
     "betterproto>=2.0.0b7",
+    "diffusers>=0.33.1",
+    "fastrtc[stt,vad]>=0.0.24",
     "faststream[cli,redis]>=0.5.40",
+    "google-genai>=1.15.0",
+    "huggingface-hub[hf-xet]>=0.31.2",
+    "janus>=2.0.0",
     "opencv-python>=4.11.0.86",
     "pillow>=11.2.1",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "redis>=6.0.0",
     "tenacity>=9.1.2",
+    "torch>=2.7.0",
+    "transformers>=4.51.3",
 ]
 
 [project.scripts]
