@@ -34,11 +34,11 @@ build-backend = "uv_build"
 betterproto = { git = "https://github.com/danielgtaylor/python-betterproto", rev = "124613f55fa8ff62a460e1ad33c5c78723b703a0" }
 torch = [
   { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
-  { index = "pytorch-cu", marker = "sys_platform == 'linux'" },
+  { marker = "sys_platform == 'linux'", path = "./wheels/torch-2.5.0a0+872d972e41.nv24.08-cp310-cp310-linux_aarch64.whl" },
 ]
 torchvision = [
   { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
-  { index = "pytorch-cu", marker = "sys_platform == 'linux'" },
+  # { index = "pytorch-cu", marker = "sys_platform == 'linux'" },
 ]
 
 [[tool.uv.index]]
