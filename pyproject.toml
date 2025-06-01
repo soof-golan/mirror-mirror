@@ -3,7 +3,7 @@ name = "mirror-mirror"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.10.7"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "accelerate>=1.7.0",
     "betterproto>=2.0.0b7",
@@ -33,7 +33,8 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "redis>=6.0.0",
     "tenacity>=9.1.2",
-    "torch>=2.5.0",
+    "torch==2.7.0 ; sys_platform != 'linux'",
+    "torch @ https://pypi.jetson-ai-lab.dev/jp6/cu128/+f/031/a8530870d8e1c/torch-2.7.0-cp312-cp312-linux_aarch64.whl#sha256=031a8530870d8e1c71ff7709b1a39862647825e049bcd00aca47d0c2fce2363c ; sys_platform == 'linux' and platform_machine == 'aarch64'",
     "transformers>=4.51.3",
 ]
 
@@ -46,21 +47,3 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 betterproto = { git = "https://github.com/danielgtaylor/python-betterproto", rev = "124613f55fa8ff62a460e1ad33c5c78723b703a0" }
-torch = [
-  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
-  { marker = "sys_platform == 'linux'", path = "./wheels/torch-2.5.0a0+872d972e41.nv24.08-cp310-cp310-linux_aarch64.whl" },
-]
-torchvision = [
-  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
-  # { index = "pytorch-cu", marker = "sys_platform == 'linux'" },
-]
-
-[[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
-
-[[tool.uv.index]]
-name = "pytorch-cu"
-url = "https://download.pytorch.org/whl/cu121"
-explicit = true
