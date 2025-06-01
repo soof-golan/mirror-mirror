@@ -28,5 +28,6 @@ def gen():
     ).images[0]
 
 
-t = timeit.timeit("gen()", globals=globals(), number=10)
-print(f"Time taken for 10 runs: {t:.2f} seconds")
+n = 100
+t = timeit.timeit("gen()", globals=globals(), number=n)
+print(f"Time taken for 10 runs: {t:.2f} seconds ({t / n:.2f} seconds per run)")
