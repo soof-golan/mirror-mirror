@@ -2,6 +2,7 @@ import timeit
 
 import torch
 from diffusers import StableDiffusionPipeline
+from diffusers.models.attention_processor import AttnProcessor2_0
 
 repo = "IDKiro/sdxs-512-dreamshaper"
 seed = 42
@@ -11,9 +12,9 @@ weight_type = torch.float16  # or float32
 pipe: StableDiffusionPipeline = StableDiffusionPipeline.from_pretrained(
     repo, torch_dtype=weight_type
 )
-pipe.to("cuda")
+pipe.unet.set_attn_processor(AttnProcessor2_0())
 pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
-
+pipe.to("cuda")
 prompt = "a close-up picture of an old man standing in the rain"
 g = torch.Generator(device="cuda").manual_seed(seed)
 prompt_embeds, negative_prompt_embeds = pipe.encode_prompt(
