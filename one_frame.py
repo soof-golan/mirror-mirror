@@ -13,7 +13,7 @@ pipe: StableDiffusionPipeline = StableDiffusionPipeline.from_pretrained(
     repo, torch_dtype=weight_type
 )
 pipe.unet.set_attn_processor(AttnProcessor2_0())
-pipe.to("cuda")π
+pipe.to("cuda")
 pipe.unet = torch.compile(
     pipe.unet, backend="cudagraphs", mode="reduce-overhead", fullgraph=True
 )
