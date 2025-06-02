@@ -486,7 +486,8 @@ dependencies = [
     { name = "torch", version = "2.7.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
     { name = "torch", version = "2.7.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin' and sys_platform != 'linux'" },
     { name = "transformers" },
-    { name = "triton" },
+    { name = "triton", version = "3.3.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
+    { name = "triton", version = "3.3.0", source = { url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
 ]
 
 [package.metadata]
@@ -522,7 +523,8 @@ requires-dist = [
     { name = "torch", marker = "sys_platform != 'linux'", specifier = ">=2.5.0", index = "https://download.pytorch.org/whl/cpu" },
     { name = "torch", marker = "sys_platform == 'linux'", path = "wheels/torch-2.5.0a0+872d972e41.nv24.08-cp310-cp310-linux_aarch64.whl" },
     { name = "transformers", specifier = ">=4.51.3" },
-    { name = "triton", url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" },
+    { name = "triton", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'", specifier = ">=3.3.0" },
+    { name = "triton", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" },
 ]
 
 [[package]]
@@ -1234,9 +1236,26 @@ wheels = [
 [[package]]
 name = "triton"
 version = "3.3.0"
-source = { url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" }
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_machine != 'aarch64' and sys_platform == 'linux'",
+]
 dependencies = [
-    { name = "setuptools" },
+    { name = "setuptools", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/04/d54d3a6d077c646624dc9461b0059e23fd5d30e0dbe67471e3654aec81f9/triton-3.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:fad99beafc860501d7fcc1fb7045d9496cbe2c882b1674640304949165a916e7", size = 156441993, upload-time = "2025-04-09T20:27:25.107Z" },
+]
+
+[[package]]
+name = "triton"
+version = "3.3.0"
+source = { url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" }
+resolution-markers = [
+    "platform_machine == 'aarch64' and sys_platform == 'linux'",
+]
+dependencies = [
+    { name = "setuptools", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
 ]
 wheels = [
     { url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl", hash = "sha256:7e8bb11e12039b80eaad3da36e7de50f61f6680425a28cb58efb80447dca6107" },
