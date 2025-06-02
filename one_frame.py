@@ -15,7 +15,7 @@ pipe.to("cuda")
 
 prompt = "a close-up picture of an old man standing in the rain"
 g = torch.Generator(device="cuda").manual_seed(seed)
-prompt_embed = pipe.encode_prompt(
+prompt_embeds, negative_prompt_embeds = pipe.encode_prompt(
     [prompt],
     num_images_per_prompt=1,
     device=pipe.device,
@@ -27,7 +27,8 @@ prompt_embed = pipe.encode_prompt(
 def gen():
     image = pipe.__call__(
         # prompt,
-        prompt_embeds=prompt_embed,
+        prompt_embeds=prompt_embeds,
+        negative_prompt_embeds=negative_prompt_embeds,
         num_inference_steps=1,
         guidance_scale=0,
         # generator=g,
