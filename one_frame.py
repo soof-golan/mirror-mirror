@@ -37,6 +37,9 @@ def gen():
     ).images[0]
 
 
+# Warm up the compiled model
+gen()
+
 n = 100
 t = timeit.timeit("gen()", globals=globals(), number=n)
 print(f"Time taken for {n} runs: {t:.2f} seconds ({t / n:.2f} seconds per run)")
