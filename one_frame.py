@@ -14,9 +14,7 @@ pipe: StableDiffusionPipeline = StableDiffusionPipeline.from_pretrained(
 )
 pipe.unet.set_attn_processor(AttnProcessor2_0())
 pipe.to("cuda")
-pipe.unet = torch.compile(
-    pipe.unet, backend="cudagraphs", mode="reduce-overhead", fullgraph=True
-)
+pipe.unet = torch.compile(pipe.unet, backend="cudagraphs")
 prompt = "a close-up picture of an old man standing in the rain"
 g = torch.Generator(device="cuda").manual_seed(seed)
 prompt_embeds, negative_prompt_embeds = pipe.encode_prompt(
