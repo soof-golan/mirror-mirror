@@ -34,7 +34,8 @@ dependencies = [
     "tenacity>=9.1.2",
     "torch>=2.5.0",
     "transformers>=4.51.3",
-    "numpy < 2"
+    "numpy < 2",
+    "triton @ https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl#sha256=7e8bb11e12039b80eaad3da36e7de50f61f6680425a28cb58efb80447dca6107",
 ]
 
 [project.scripts]
