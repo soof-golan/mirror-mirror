@@ -12,6 +12,7 @@ pipe: StableDiffusionPipeline = StableDiffusionPipeline.from_pretrained(
     repo, torch_dtype=weight_type
 )
 pipe.to("cuda")
+pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
 
 prompt = "a close-up picture of an old man standing in the rain"
 g = torch.Generator(device="cuda").manual_seed(seed)
