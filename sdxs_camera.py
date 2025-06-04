@@ -163,7 +163,12 @@ def recv_nowait(channels: dict[str, queue.Queue], channel: str, default: Any) ->
 
 @app.command()
 def main(camera_id: int = 0):
-    channels = {}
+    channels = {
+        CAMERA: queue.Queue(),
+        LATENTS_IN: queue.Queue(),
+        LATENTS_OUT: queue.Queue(),
+        IMAGE_OUT: queue.Queue(),
+    }
     publish(channels, "prompt_embeds", (prompt_embeds, negative_prompt_embeds))
     threading.Thread(target=camera_loop, args=(channels, camera_id), daemon=True).start()
     threading.Thread(target=encode_frame_loop, args=(channels, pipe), daemon=True).start()
