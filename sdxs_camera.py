@@ -84,14 +84,14 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
     while True:
         latents_in = recv(channels, LATENTS_IN)
         try:
-            latents_out = pipe(
+            latents_out = pipe.__call__(
                 prompt_embeds=prompt_embeds,
                 negative_prompt_embeds=negative_prompt_embeds,
                 num_inference_steps=1,
                 guidance_scale=0,
                 output_type="latent",
                 latents=latents_in,
-            )
+            ).images
         except Exception as e:
             logger.exception("Error during diffusion: %s", exc_info=e)
             raise
