@@ -81,16 +81,8 @@ def encode_frame_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPip
 
 @torch.inference_mode
 def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline) -> NoReturn:
-    prompt_embeds, negative_prompt_embeds = None, None
     while True:
         latents_in = recv(channels, LATENTS_IN)
-        prompt_embeds, negative_prompt_embeds = recv_nowait(
-            channels, "prompt_embeds", default=(prompt_embeds, negative_prompt_embeds)
-        )
-        print("diffusing latents", latents_in.shape)
-        if prompt_embeds is None or negative_prompt_embeds is None:
-            # Wait for prompt embeds to be set
-            continue
         try:
             latents_out = pipe(
                 prompt_embeds=prompt_embeds,
@@ -103,6 +95,7 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
         except Exception as e:
             logger.exception("Error during diffusion: %s", exc_info=e)
             raise
+
         publish(channels, LATENTS_OUT, latents_out)
 
 
