@@ -110,7 +110,7 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
 def decode_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline) -> NoReturn:
     vae: AutoencoderKL | AutoencoderTiny = pipe.vae
     scaling_recip = 1 / vae.config.scaling_factor
-    print("decode_loop", scaling factor", vae.config.scaling_factor, "reciprocal", scaling_recip)
+    print("decode_loop: scaling factor", vae.config.scaling_factor, "reciprocal", scaling_recip)
     while True:
         latents = recv(channels, LATENTS_OUT)
         print("decoding latents", latents.shape)
