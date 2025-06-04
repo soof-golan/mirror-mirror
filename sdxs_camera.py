@@ -29,6 +29,11 @@ prompt_embeds, negative_prompt_embeds = pipe.encode_prompt(
     do_classifier_free_guidance=False,
 )
 
+CAMERA = "camera"
+LATENTS_IN = "latents_in"
+LATENTS_OUT = "latents_out"
+IMAGE_OUT = "image_out"
+
 
 # Ensure using 1 inference step and CFG set to 0.
 def gen():
@@ -45,6 +50,12 @@ def gen():
 
 def camera_loop(channels: dict[str, queue.Queue], camera_id: int) -> NoReturn:
     cap = cv2.VideoCapture(camera_id)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    print(
+        f"Camera {camera_id} opened with resolution {cap.get(cv2.CAP_PROP_FRAME_WIDTH)}x{cap.get(cv2.CAP_PROP_FRAME_HEIGHT)}"
+    )
     if not cap.isOpened():
         raise RuntimeError(f"Failed to open camera {camera_id}")
     while True:
@@ -52,27 +63,27 @@ def camera_loop(channels: dict[str, queue.Queue], camera_id: int) -> NoReturn:
         success, frame = cap.read()
         if not success:
             raise RuntimeError("Failed to capture frame")
-        publish(channels, "camera", frame)
+        publish(channels, CAMERA, frame)
 
 
 @torch.inference_mode
 def encode_frame_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline) -> NoReturn:
     vae: AutoencoderKL | AutoencoderTiny = pipe.vae
     while True:
-        frame = recv(channels, "camera")
+        frame = recv(channels, CAMERA)
         print("encoding frame", frame.shape)
 
         image = pipe.image_processor.preprocess(frame)
         image = image.to(pipe.device, dtype=pipe.dtype)
         latents = vae.encoder.forward(image)
-        publish(channels, "latents_in", latents)
+        publish(channels, LATENTS_IN, latents)
 
 
 @torch.inference_mode
 def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline) -> NoReturn:
     prompt_embeds, negative_prompt_embeds = None, None
     while True:
-        latents_in = recv(channels, "latents_in")
+        latents_in = recv(channels, LATENTS_IN)
         prompt_embeds, negative_prompt_embeds = recv_nowait(
             channels, "prompt_embeds", default=(prompt_embeds, negative_prompt_embeds)
         )
@@ -88,7 +99,7 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
             output_type="latent",
             latents=latents_in,
         )
-        publish(channels, "latents_out", latents_out)
+        publish(channels, LATENTS_OUT, latents_out)
 
 
 @torch.inference_mode
@@ -96,16 +107,17 @@ def decode_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline)
     vae: AutoencoderKL | AutoencoderTiny = pipe.vae
     scaling_recip = 1 / vae.config.scaling_factor
     while True:
-        latents = recv(channels, "latents_out")
+        latents = recv(channels, LATENTS_OUT)
         print("decoding latents", latents.shape)
         img = vae.decoder.forward(latents * scaling_recip)
         img = pipe.image_processor.postprocess(img, output_type="np")
-        publish(channels, "image_out", img)
+        publish(channels, IMAGE_OUT, img)
 
 
 def display_loop(channels: dict[str, queue.Queue]) -> NoReturn:
+    print("display thread started")
     while True:
-        frame = recv(channels, "image_out")
+        frame = recv(channels, IMAGE_OUT)
         print("displaying image", frame.shape)
         cv2.imshow("frame", frame)
         key = cv2.waitKey(1)
