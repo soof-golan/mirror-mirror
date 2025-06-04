@@ -48,6 +48,7 @@ def camera_loop(channels: dict[str, queue.Queue], camera_id: int) -> NoReturn:
     if not cap.isOpened():
         raise RuntimeError(f"Failed to open camera {camera_id}")
     while True:
+        print("Capturing frame from camera...")
         success, frame = cap.read()
         if not success:
             raise RuntimeError("Failed to capture frame")
@@ -59,6 +60,7 @@ def encode_frame_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPip
     vae: AutoencoderKL | AutoencoderTiny = pipe.vae
     while True:
         frame = recv(channels, "camera")
+        print("encoding frame", frame.shape)
 
         image = pipe.image_processor.preprocess(frame)
         image = image.to(pipe.device, dtype=pipe.dtype)
@@ -74,6 +76,7 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
         prompt_embeds, negative_prompt_embeds = recv_nowait(
             channels, "prompt_embeds", default=(prompt_embeds, negative_prompt_embeds)
         )
+        print("diffusing latents", latents_in.shape)
         if prompt_embeds is None or negative_prompt_embeds is None:
             # Wait for prompt embeds to be set
             continue
@@ -94,6 +97,7 @@ def decode_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline)
     scaling_recip = 1 / vae.config.scaling_factor
     while True:
         latents = recv(channels, "latents_out")
+        print("decoding latents", latents.shape)
         img = vae.decoder.forward(latents * scaling_recip)
         img = pipe.image_processor.postprocess(img, output_type="np")
         publish(channels, "image_out", img)
@@ -102,6 +106,7 @@ def decode_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeline)
 def display_loop(channels: dict[str, queue.Queue]) -> NoReturn:
     while True:
         frame = recv(channels, "image_out")
+        print("displaying image", frame.shape)
         cv2.imshow("frame", frame)
         key = cv2.waitKey(1)
         if key == ord("q"):
