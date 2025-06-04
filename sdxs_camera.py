@@ -1,3 +1,4 @@
+import logging
 import queue
 import threading
 from contextlib import suppress
@@ -9,6 +10,7 @@ from diffusers.models.attention_processor import AttnProcessor2_0
 import cv2
 from typer import Typer
 
+logger = logging.getLogger(__name__)
 app = Typer()
 
 repo = "IDKiro/sdxs-512-dreamshaper"
@@ -59,7 +61,6 @@ def camera_loop(channels: dict[str, queue.Queue], camera_id: int) -> NoReturn:
     if not cap.isOpened():
         raise RuntimeError(f"Failed to open camera {camera_id}")
     while True:
-        print("Capturing frame from camera...")
         success, frame = cap.read()
         if not success:
             raise RuntimeError("Failed to capture frame")
@@ -71,7 +72,6 @@ def encode_frame_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPip
     vae: AutoencoderKL | AutoencoderTiny = pipe.vae
     while True:
         frame = recv(channels, CAMERA)
-        print("encoding frame", frame.shape)
 
         image = pipe.image_processor.preprocess(frame)
         image = image.to(pipe.device, dtype=pipe.dtype)
@@ -91,14 +91,18 @@ def diffusion_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPipeli
         if prompt_embeds is None or negative_prompt_embeds is None:
             # Wait for prompt embeds to be set
             continue
-        latents_out = pipe.__call__(
-            prompt_embeds=prompt_embeds,
-            negative_prompt_embeds=negative_prompt_embeds,
-            num_inference_steps=1,
-            guidance_scale=0,
-            output_type="latent",
-            latents=latents_in,
-        )
+        try:
+            latents_out = pipe(
+                prompt_embeds=prompt_embeds,
+                negative_prompt_embeds=negative_prompt_embeds,
+                num_inference_steps=1,
+                guidance_scale=0,
+                output_type="latent",
+                latents=latents_in,
+            )
+        except Exception as e:
+            logger.exception("Error during diffusion: %s", exc_info=e)
+            raise
         publish(channels, LATENTS_OUT, latents_out)
 
 
