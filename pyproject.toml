@@ -68,3 +68,6 @@ explicit = true
 name = "pytorch-cu"
 url = "https://download.pytorch.org/whl/cu121"
 explicit = true
+
+[tool.ruff]
+line-length = 120
