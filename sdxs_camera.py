@@ -74,7 +74,7 @@ def encode_frame_loop(channels: dict[str, queue.Queue], pipe: StableDiffusionPip
     while True:
         frame = recv(channels, CAMERA)
 
-        image = pipe.image_processor.preprocess(frame)
+        image = pipe.image_processor.preprocess(frame, width=512, height=512)
         image = image.to(pipe.device, dtype=pipe.dtype)
         latents = vae.encoder.forward(image)
         publish(channels, LATENTS_IN, latents)
