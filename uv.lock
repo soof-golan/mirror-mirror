@@ -488,6 +488,7 @@ dependencies = [
     { name = "transformers" },
     { name = "triton", version = "3.3.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
     { name = "triton", version = "3.3.0", source = { url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
+    { name = "typer" },
 ]
 
 [package.metadata]
@@ -525,6 +526,7 @@ requires-dist = [
     { name = "transformers", specifier = ">=4.51.3" },
     { name = "triton", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'", specifier = ">=3.3.0" },
     { name = "triton", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", url = "https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/7e8/bb11e12039b80/triton-3.3.0-cp310-cp310-linux_aarch64.whl" },
+    { name = "typer", specifier = ">=0.15.3" },
 ]
 
 [[package]]

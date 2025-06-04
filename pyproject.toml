@@ -36,6 +36,7 @@ dependencies = [
     "transformers>=4.51.3",
     "numpy < 2",
     "triton>=3.3.0 ; sys_platform == 'linux'",
+    "typer>=0.15.3",
 ]
 
 [project.scripts]
