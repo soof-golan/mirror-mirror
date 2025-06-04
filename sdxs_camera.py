@@ -19,6 +19,7 @@ weight_type = torch.float16  # or float32
 
 # Load model.
 pipe: StableDiffusionPipeline = StableDiffusionPipeline.from_pretrained(repo, torch_dtype=weight_type)
+pipe.set_progress_bar_config(disable=True)
 pipe.unet.set_attn_processor(AttnProcessor2_0())
 pipe.to("cuda")
 
