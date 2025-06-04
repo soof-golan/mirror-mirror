@@ -117,6 +117,7 @@ def display_loop(channels: dict[str, queue.Queue]) -> NoReturn:
     print("display thread started")
     while True:
         frame = recv(channels, IMAGE_OUT)
+        frame = frame[0]
         print("displaying image", frame.shape)
         cv2.imshow("frame", frame)
         key = cv2.waitKey(1)
