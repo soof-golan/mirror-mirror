@@ -1,76 +1,188 @@
 # Mirror Mirror
 
-A camera-based system with real-time image diffusion effects.
+A real-time camera-based image diffusion system for Jetson Orin NX.
 
-## Components
+## Architecture
 
-- **Camera Server**: Captures webcam frames and publishes them to Redis
-- **Diffusion Server**: Subscribes to frames, applies effects based on prompts, and publishes processed frames
-- **Prompt Publisher**: Sends text prompts to modify diffusion effects
+The system follows a modular pipeline architecture using FastStream and Redis for message passing:
 
-## Requirements
-
-- Python 3.10+
-- Redis
-- OpenCV
-- FastStream
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/mirror-mirror.git
-cd mirror-mirror
-
-# Create and activate a virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+```
+Camera → Latent Encoder → Diffusion → Latent Decoder → Display
+                            ↑
+                     Text Prompts
 ```
 
-## Running the System
+### Components
 
-1. Start Redis server:
-   ```bash
-   redis-server
-   ```
+1. **Camera Server** (`camera_server.py`) - Captures webcam frames
+2. **Latent Encoder** (`latent_encoder.py`) - Converts frames to latent space using VAE
+3. **Diffusion Server** (`diffusion_server.py`) - Applies diffusion effects using SDXS
+4. **Latent Decoder** (`latent_decoder.py`) - Converts latents back to images
+5. **Display** (`display.py`) - Shows processed frames with performance metrics
+6. **Audio Server** (`audio_server.py`) - Voice activity detection and audio capture
+7. **Prompt Publisher** (`prompt_publisher.py`) - Publishes text prompts
 
-2. Start the diffusion server:
-   ```bash
-   python -m src.mirror_mirror.diffusion_server
-   ```
+### Message Flow
 
-3. Start the camera server:
-   ```bash
-   python -m src.mirror_mirror.camera_server
-   ```
+- **Redis Channels**:
+  - `frames:camera:{id}` - Raw camera frames
+  - `latents:camera` - Encoded camera latents
+  - `latents:diffused` - Processed latents from diffusion
+  - `images:processed` - Final processed images
+  - `prompts:*` - Text prompts for diffusion
+  - `audio:chunks` - Audio data from microphone
 
-4. Optionally, use the prompt publisher to send text prompts:
-   ```bash
-   python -m src.mirror_mirror.prompt_publisher
-   ```
+## Quick Start
+
+### Prerequisites
+
+- Jetson Orin NX with JetPack 6
+- Docker and Docker Compose
+- Python 3.10.7 with uv
+
+### Installation
+
+```bash
+git clone https://github.com/soof-golan/mirror-mirror.git
+cd mirror-mirror
+```
+
+### Running Tests
+
+**Simple test (no GPU required):**
+```bash
+./run_tests.sh
+```
+
+**Or manually:**
+```bash
+# Install dependencies
+uv sync
+
+# Run simple test with fake diffusion
+python test_system.py test-simple
+```
+
+**Full test with real diffusion:**
+```bash
+python test_system.py test-full
+```
+
+### Manual Control
+
+```bash
+# Start Redis
+python test_system.py start-redis
+
+# Start the complete pipeline
+python test_system.py start-pipeline --mode=sdxs --debug
+
+# Check status
+python test_system.py status
+
+# Publish a test prompt
+python test_system.py publish-prompt "a beautiful sunset landscape"
+
+# Cleanup
+python test_system.py cleanup
+```
+
+### Individual Components
+
+```bash
+# Start Redis first
+python test_system.py start-redis
+
+# Run individual components
+uv run python -m mirror_mirror.camera_server
+uv run python -m mirror_mirror.latent_encoder
+uv run python -m mirror_mirror.diffusion_server
+uv run python -m mirror_mirror.latent_decoder
+uv run python -m mirror_mirror.display
+```
 
 ## Configuration
 
-All components use environment variables for configuration or default values:
-
-- `REDIS_URL`: Redis connection URL (default: "redis://localhost:6379")
-- `CAMERA_ID`: Camera device ID (default: 0)
-- `FPS`: Frame rate for camera capture (default: 24)
-- `FEED_NAME`: Feed identifier (default: "main")
-
-# Development
-
-To develop on the Jetson Orin NX device, use the following commands to sync the latest code from the repository:
+Each component can be configured via environment variables:
 
 ```bash
-ssh -XC soof@soof-jetson.tail6f38f.ts.net
-cd ~/dev/soof-golan/mirror-mirror/
-git pull
-uv sync
+# Camera settings
+export CAMERA_ID=0
+export FPS=24
+export FRAME_WIDTH=640
+export FRAME_HEIGHT=480
+
+# Diffusion settings
+export MODE=sdxs  # or "fake"
+export MODEL_REPO=IDKiro/sdxs-512-dreamshaper
+export DEVICE=cuda
+export TORCH_DTYPE=float16
+
+# Redis settings
+export REDIS_URL=redis://localhost:6379
 ```
+
+## Performance
+
+The system is optimized for real-time performance on Jetson Orin NX:
+
+- **Target**: 15-30 FPS end-to-end
+- **Latency**: <100ms camera to display
+- **Memory**: ~4GB GPU memory usage
+- **Models**: SDXS (1-step diffusion) for speed
+
+## Controls
+
+When running the display:
+- Press `q` to quit
+- Press `f` to toggle FPS/performance display
+
+## Development
+
+To add new components:
+
+1. Create a new module in `src/mirror_mirror/`
+2. Use the shared models from `models.py`
+3. Subscribe/publish to appropriate Redis channels
+4. Add to the test system pipeline
+
+## Troubleshooting
+
+**Camera not found:**
+```bash
+# List available cameras
+ls /dev/video*
+
+# Test camera directly
+uv run python -c "import cv2; cap = cv2.VideoCapture(0); print(cap.isOpened())"
+```
+
+**GPU memory issues:**
+```bash
+# Monitor GPU usage
+watch -n 1 nvidia-smi
+
+# Use fake mode for testing without GPU
+python test_system.py start-pipeline --mode=fake
+```
+
+**Redis connection issues:**
+```bash
+# Check Redis status
+docker-compose ps redis
+
+# View Redis logs
+docker-compose logs redis
+```
+
+## Future Enhancements
+
+- [ ] Speech-to-text integration
+- [ ] ControlNet support for pose/depth guidance
+- [ ] Multiple diffusion models
+- [ ] Web UI for remote control
+- [ ] Audio-reactive diffusion
+- [ ] Gesture recognition
 
  
 We're targeting Jetson Orin NX.
