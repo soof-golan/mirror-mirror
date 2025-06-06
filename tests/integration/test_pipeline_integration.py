@@ -36,8 +36,7 @@ class TestPipelineDataFlow:
         )
         
         # Step 2: Verify we can decode the frame (like latent_encoder would)
-        frame_bytes = decode_bytes(frame_message.frame)
-        decoded_frame = decode_frame(frame_bytes)
+        decoded_frame = decode_frame(frame_message.frame)
         
         assert decoded_frame.shape == sample_frame.shape
         assert decoded_frame.dtype == sample_frame.dtype
@@ -99,8 +98,7 @@ class TestPipelineDataFlow:
         )
         
         # Step 4: Verify display component can decode the frame
-        frame_bytes = decode_bytes(processed_frame_message.frame)
-        final_frame = decode_frame(frame_bytes)
+        final_frame = decode_frame(processed_frame_message.frame)
         
         assert final_frame.shape == sample_frame.shape
         assert final_frame.dtype == sample_frame.dtype
@@ -123,8 +121,7 @@ class TestPipelineDataFlow:
         logger.info(f"1. Camera: Generated frame message {len(frame_msg.frame)} chars")
         
         # Latent encoder simulation
-        frame_bytes = decode_bytes(frame_msg.frame)
-        decoded_frame = decode_frame(frame_bytes)
+        decoded_frame = decode_frame(frame_msg.frame)
         
         # Mock latent encoding
         mock_latents = np.random.randn(1, 4, 64, 64).astype(np.float32)
@@ -149,17 +146,17 @@ class TestPipelineDataFlow:
         
         # Mock diffusion (just add some noise)
         diffused_latents = input_latents + np.random.randn(*input_latents.shape) * 0.1
-        diffused_data, _, _ = serialize_array(diffused_latents)
+        diffused_data, diffused_shape, diffused_dtype = serialize_array(diffused_latents)
         
         diffused_latents_msg = LatentsMessage(
             latents=diffused_data,
-            shape=shape,
-            dtype=dtype,
+            shape=diffused_shape,
+            dtype=diffused_dtype,
             timestamp=camera_latents_msg.timestamp,
             source="diffusion"
         )
         
-        logger.info(f"3. Diffusion: Applied diffusion to latents {shape}")
+        logger.info(f"3. Diffusion: Applied diffusion to latents {diffused_shape}")
         
         # Latent decoder simulation
         output_latents = deserialize_array(
@@ -179,11 +176,10 @@ class TestPipelineDataFlow:
             processing_time=processing_time
         )
         
-        logger.info(f"4. Latent Decoder: {shape} -> final frame")
+        logger.info(f"4. Latent Decoder: {diffused_shape} -> final frame")
         
         # Display simulation
-        final_frame_bytes = decode_bytes(processed_msg.frame)
-        final_frame = decode_frame(final_frame_bytes)
+        final_frame = decode_frame(processed_msg.frame)
         
         logger.info(f"5. Display: Ready to show {final_frame.shape} frame")
         
@@ -274,8 +270,7 @@ class TestPerformanceIntegration:
             )
             
             # Latent encoder simulation
-            frame_bytes = decode_bytes(frame_msg.frame)
-            decoded_frame = decode_frame(frame_bytes)
+            decoded_frame = decode_frame(frame_msg.frame)
             
             # Mock latent processing
             mock_latents = np.random.randn(1, 4, 64, 64).astype(np.float32)
@@ -294,8 +289,7 @@ class TestPerformanceIntegration:
             )
             
             # Mock display
-            final_bytes = decode_bytes(processed_msg.frame)
-            final_frame = decode_frame(final_bytes)
+            final_frame = decode_frame(processed_msg.frame)
         
         duration = performance_monitor.end("full_pipeline_simulation")
         
@@ -324,8 +318,7 @@ class TestPerformanceIntegration:
             )
             
             # Decode and re-encode
-            frame_bytes = decode_bytes(frame_msg.frame)
-            decoded = decode_frame(frame_bytes)
+            decoded = decode_frame(frame_msg.frame)
             
             # Create latents message
             mock_latents = np.random.randn(1, 4, 64, 64).astype(np.float32)

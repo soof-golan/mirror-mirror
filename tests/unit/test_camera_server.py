@@ -46,57 +46,61 @@ class TestCameraServerConfig:
         assert config.frame_height == 720
 
 
+@pytest.fixture
+def mock_cv2_videocapture():
+    """Mock cv2.VideoCapture"""
+    with patch('mirror_mirror.camera_server.cv2.VideoCapture') as mock_vc:
+        mock_cap = MagicMock()
+        mock_vc.return_value = mock_cap
+        
+        # Configure mock camera
+        mock_cap.isOpened.return_value = True
+        mock_cap.get.side_effect = lambda prop: {
+            cv2.CAP_PROP_FRAME_WIDTH: 640.0,
+            cv2.CAP_PROP_FRAME_HEIGHT: 480.0,
+            cv2.CAP_PROP_FPS: 24.0
+        }.get(prop, 0.0)
+        
+        # Mock successful frame reads
+        test_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        test_frame[:, :, 0] = 128  # Add some data
+        mock_cap.read.return_value = (True, test_frame)
+        
+        yield mock_cap
+
+
+@pytest.fixture  
+def mock_redis_broker_camera():
+    """Mock Redis broker for camera tests"""
+    with patch('mirror_mirror.camera_server.RedisBroker') as mock_broker_class:
+        mock_broker = AsyncMock()
+        mock_broker_class.return_value = mock_broker
+        
+        # Mock context manager
+        mock_broker.__aenter__ = AsyncMock(return_value=mock_broker)
+        mock_broker.__aexit__ = AsyncMock(return_value=None)
+        
+        yield mock_broker
+
+
+@pytest.fixture
+def mock_config():
+    """Mock configuration for testing"""
+    with patch('mirror_mirror.camera_server.config') as mock_cfg:
+        mock_cfg.redis_url = "redis://test:6379"
+        mock_cfg.camera_id = 0
+        mock_cfg.fps = 5  # Lower FPS for faster testing
+        mock_cfg.frame_width = 640
+        mock_cfg.frame_height = 480
+        yield mock_cfg
+
+
 @pytest.mark.unit
 class TestCameraServerMocking:
     """Test camera server with mocked dependencies"""
-    
-    @pytest.fixture
-    def mock_cv2_videocapture(self):
-        """Mock cv2.VideoCapture"""
-        with patch('mirror_mirror.camera_server.cv2.VideoCapture') as mock_vc:
-            mock_cap = MagicMock()
-            mock_vc.return_value = mock_cap
-            
-            # Configure mock camera
-            mock_cap.isOpened.return_value = True
-            mock_cap.get.side_effect = lambda prop: {
-                cv2.CAP_PROP_FRAME_WIDTH: 640.0,
-                cv2.CAP_PROP_FRAME_HEIGHT: 480.0,
-                cv2.CAP_PROP_FPS: 24.0
-            }.get(prop, 0.0)
-            
-            # Mock successful frame reads
-            test_frame = np.zeros((480, 640, 3), dtype=np.uint8)
-            test_frame[:, :, 0] = 128  # Add some data
-            mock_cap.read.return_value = (True, test_frame)
-            
-            yield mock_cap
-    
-    @pytest.fixture  
-    def mock_redis_broker(self):
-        """Mock Redis broker"""
-        with patch('mirror_mirror.camera_server.RedisBroker') as mock_broker_class:
-            mock_broker = AsyncMock()
-            mock_broker_class.return_value = mock_broker
-            
-            # Mock context manager
-            mock_broker.__aenter__ = AsyncMock(return_value=mock_broker)
-            mock_broker.__aexit__ = AsyncMock(return_value=None)
-            
-            yield mock_broker
-    
-    @pytest.fixture
-    def mock_config(self):
-        """Mock configuration for testing"""
-        with patch('mirror_mirror.camera_server.config') as mock_cfg:
-            mock_cfg.redis_url = "redis://test:6379"
-            mock_cfg.camera_id = 0
-            mock_cfg.fps = 5  # Lower FPS for faster testing
-            mock_cfg.frame_width = 640
-            mock_cfg.frame_height = 480
-            yield mock_cfg
 
-    async def test_camera_initialization_success(self, mock_cv2_videocapture, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_camera_initialization_success(self, mock_cv2_videocapture, mock_redis_broker_camera, mock_config):
         """Test successful camera initialization"""
         
         # Cancel after a short time to avoid infinite loop
@@ -119,11 +123,12 @@ class TestCameraServerMocking:
         assert mock_cv2_videocapture.set.call_count >= 3  # Width, height, FPS
         
         # Verify Redis broker was used
-        mock_redis_broker.publish.assert_called()
+        mock_redis_broker_camera.publish.assert_called()
         
         logger.info("Camera initialization test completed successfully")
 
-    async def test_camera_open_failure(self, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_camera_open_failure(self, mock_redis_broker_camera, mock_config):
         """Test camera open failure"""
         
         with patch('mirror_mirror.camera_server.cv2.VideoCapture') as mock_vc:
@@ -134,7 +139,8 @@ class TestCameraServerMocking:
             with pytest.raises(RuntimeError, match="Failed to open camera"):
                 await main()
     
-    async def test_frame_read_failure(self, mock_cv2_videocapture, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_frame_read_failure(self, mock_cv2_videocapture, mock_redis_broker_camera, mock_config):
         """Test handling of frame read failures"""
         
         # First few reads fail, then succeed
@@ -159,7 +165,8 @@ class TestCameraServerMocking:
         # Should have tried to read multiple times
         assert mock_cv2_videocapture.read.call_count >= 2
 
-    async def test_frame_publishing(self, mock_cv2_videocapture, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_frame_publishing(self, mock_cv2_videocapture, mock_redis_broker_camera, mock_config):
         """Test frame publishing to Redis"""
         
         # Create a recognizable test frame
@@ -180,10 +187,10 @@ class TestCameraServerMocking:
             )
         
         # Verify frames were published
-        assert mock_redis_broker.publish.call_count > 0
+        assert mock_redis_broker_camera.publish.call_count > 0
         
         # Check the published message structure
-        publish_calls = mock_redis_broker.publish.call_args_list
+        publish_calls = mock_redis_broker_camera.publish.call_args_list
         assert len(publish_calls) > 0
         
         # Examine first published message
@@ -212,7 +219,8 @@ class TestCameraServerMocking:
         
         logger.info(f"Published {len(publish_calls)} frames successfully")
 
-    async def test_fps_limiting(self, mock_cv2_videocapture, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_fps_limiting(self, mock_cv2_videocapture, mock_redis_broker_camera, mock_config):
         """Test FPS limiting functionality"""
         
         # Set very low FPS for testing
@@ -233,7 +241,7 @@ class TestCameraServerMocking:
             )
         
         elapsed = time.time() - start_time
-        publish_count = mock_redis_broker.publish.call_count
+        publish_count = mock_redis_broker_camera.publish.call_count
         
         # Should have published roughly 2 frames in 1 second
         assert publish_count <= 4, f"Too many frames published: {publish_count} in {elapsed:.2f}s"
@@ -291,7 +299,8 @@ class TestCameraServerPerformance:
 class TestCameraServerErrorHandling:
     """Test error handling in camera server"""
     
-    async def test_encoding_error_handling(self, mock_redis_broker, mock_config):
+    @pytest.mark.asyncio
+    async def test_encoding_error_handling(self, mock_redis_broker_camera, mock_config):
         """Test handling of frame encoding errors"""
         
         with patch('mirror_mirror.camera_server.cv2.VideoCapture') as mock_vc:
@@ -319,8 +328,9 @@ class TestCameraServerErrorHandling:
                 # Should have attempted to read frames but not published due to errors
                 assert mock_cap.read.call_count > 0
                 # Should not have published anything due to encoding errors
-                assert mock_redis_broker.publish.call_count == 0
+                assert mock_redis_broker_camera.publish.call_count == 0
 
+    @pytest.mark.asyncio
     async def test_redis_publish_error_handling(self, mock_cv2_videocapture, mock_config):
         """Test handling of Redis publish errors"""
         
