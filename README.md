@@ -47,6 +47,8 @@ git clone https://github.com/soof-golan/mirror-mirror.git
 cd mirror-mirror
 ```
 
+> **Important**: Always use `uv run python` instead of bare `python` commands to ensure proper dependency management and virtual environment activation.
+
 ### Running Tests
 
 **Simple test (no GPU required):**
@@ -60,38 +62,38 @@ cd mirror-mirror
 uv sync
 
 # Run simple test with fake diffusion
-python test_system.py test-simple
+uv run python test_system.py test-simple
 ```
 
 **Full test with real diffusion:**
 ```bash
-python test_system.py test-full
+uv run python test_system.py test-full
 ```
 
 ### Manual Control
 
 ```bash
 # Start Redis
-python test_system.py start-redis
+uv run python test_system.py start-redis
 
 # Start the complete pipeline
-python test_system.py start-pipeline --mode=sdxs --debug
+uv run python test_system.py start-pipeline --mode=sdxs --debug
 
 # Check status
-python test_system.py status
+uv run python test_system.py status
 
 # Publish a test prompt
-python test_system.py publish-prompt "a beautiful sunset landscape"
+uv run python test_system.py publish-prompt "a beautiful sunset landscape"
 
 # Cleanup
-python test_system.py cleanup
+uv run python test_system.py cleanup
 ```
 
 ### Individual Components
 
 ```bash
 # Start Redis first
-python test_system.py start-redis
+uv run python test_system.py start-redis
 
 # Run individual components
 uv run python -m mirror_mirror.camera_server
@@ -176,15 +178,15 @@ From your development machine:
 ./setup_jetson.sh
 
 # Quick hardware validation
-python test_camera.py
-python debug_jetson.py diagnose
+uv run python test_camera.py
+uv run python debug_jetson.py diagnose
 
 # Run system tests
-python test_system.py test-simple    # No GPU required
-python test_system.py test-full      # Requires GPU
+uv run python test_system.py test-simple    # No GPU required
+uv run python test_system.py test-full      # Requires GPU
 
 # Monitor performance
-python debug_jetson.py monitor
+uv run python debug_jetson.py monitor
 ```
 
 See [JETSON_TESTING.md](JETSON_TESTING.md) for detailed testing guide.
@@ -215,7 +217,7 @@ uv run python -c "import cv2; cap = cv2.VideoCapture(0); print(cap.isOpened())"
 watch -n 1 nvidia-smi
 
 # Use fake mode for testing without GPU
-python test_system.py start-pipeline --mode=fake
+uv run python test_system.py start-pipeline --mode=fake
 ```
 
 **Redis connection issues:**
