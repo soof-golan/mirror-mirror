@@ -139,6 +139,58 @@ When running the display:
 
 ## Development
 
+### Jetson Development Workflow
+
+To develop and test on the Jetson Orin NX device:
+
+```bash
+# Connect to Jetson with X11 forwarding
+ssh -XC soof@soof-jetson.tail6f38f.ts.net
+
+# Navigate to project directory
+cd ~/dev/mirror-mirror/
+
+# Pull latest changes
+git pull
+
+# Sync dependencies
+uv sync
+```
+
+### Sync Code to Jetson
+
+From your development machine:
+
+```bash
+# Sync code to Jetson
+./sync_to_jetson.sh soof-jetson.tail6f38f.ts.net soof
+
+# Or with custom settings
+./sync_to_jetson.sh [jetson-host] [jetson-user]
+```
+
+### Testing on Jetson
+
+```bash
+# Setup environment (first time only)
+./setup_jetson.sh
+
+# Quick hardware validation
+python test_camera.py
+python debug_jetson.py diagnose
+
+# Run system tests
+python test_system.py test-simple    # No GPU required
+python test_system.py test-full      # Requires GPU
+
+# Monitor performance
+python debug_jetson.py monitor
+```
+
+See [JETSON_TESTING.md](JETSON_TESTING.md) for detailed testing guide.
+
+### Adding New Components
+
 To add new components:
 
 1. Create a new module in `src/mirror_mirror/`
