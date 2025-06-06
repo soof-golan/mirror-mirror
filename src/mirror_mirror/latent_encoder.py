@@ -81,8 +81,17 @@ class LatentEncoder:
         image_tensor = 2.0 * image_tensor - 1.0
         
         # Encode to latents
-        latents = self.vae.encode(image_tensor).latent_dist.sample()
-        latents = latents * self.vae.config.scaling_factor
+        output = self.vae.encode(image_tensor)
+        
+        # Handle different VAE output formats
+        if hasattr(output, 'latent_dist'):
+            # AutoencoderKL format
+            latents = output.latent_dist.sample()
+            latents = latents * self.vae.config.scaling_factor
+        else:
+            # AutoencoderTiny format - returns latents directly
+            latents = output.latents
+            # AutoencoderTiny doesn't need scaling
         
         # Convert to numpy and serialize
         latents_np = latents.cpu().float().numpy()
