@@ -12,7 +12,8 @@ from mirror_mirror.models import (
     CarrierMessage, 
     LatentsMessage, 
     ProcessedFrameMessage,
-    deserialize_array
+    deserialize_array,
+    encode_bytes
 )
 
 logger = logging.getLogger(__name__)
@@ -111,7 +112,7 @@ async def decode_diffused_latents(
         processing_time = time.time() - start_time
         
         processed_msg = ProcessedFrameMessage(
-            frame=image_bytes,
+            frame=encode_bytes(image_bytes),
             timestamp=latents_msg.timestamp,
             processing_time=processing_time
         )
