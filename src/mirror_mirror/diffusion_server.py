@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 import torch
@@ -236,4 +237,4 @@ async def update_prompts(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.info(f"Starting diffusion server in {config.mode} mode...")
-    app.run()
+    asyncio.run(app.run())

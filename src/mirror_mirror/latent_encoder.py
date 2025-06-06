@@ -138,4 +138,4 @@ if __name__ == "__main__":
     
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting latent encoder...")
-    app.run() 
+    asyncio.run(app.run()) 

@@ -126,6 +126,8 @@ async def decode_diffused_latents(
 
 
 if __name__ == "__main__":
+    import asyncio
+    
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting latent decoder...")
-    app.run() 
+    asyncio.run(app.run()) 

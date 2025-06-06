@@ -134,6 +134,6 @@ if __name__ == "__main__":
     logger.info("Press 'q' to quit, 'f' to toggle FPS display")
     
     try:
-        app.run()
+        asyncio.run(app.run())
     finally:
         cv2.destroyAllWindows()
