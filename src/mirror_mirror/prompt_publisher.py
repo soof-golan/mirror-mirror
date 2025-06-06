@@ -1,9 +1,10 @@
 import asyncio
+import time
 from faststream import FastStream
 from faststream.redis import RedisBroker
-from pydantic import BaseModel
-from typing import Literal
 from pydantic_settings import BaseSettings
+
+from mirror_mirror.models import PromptMessage, CarrierMessage
 
 
 class Config(BaseSettings):
@@ -13,22 +14,21 @@ class Config(BaseSettings):
 config = Config()
 
 
-class PromptMessage(BaseModel):
-    msg_type: Literal["prompt"] = "prompt"
-    prompt: str
-
-
 async def publish_prompt(prompt: str):
     """Publish a prompt message to update the diffuser"""
     broker = RedisBroker(url=config.redis_url)
     
     try:
+        # Connect to broker
+        await broker.connect()
+        
         # Create message
-        message = PromptMessage(prompt=prompt)
+        prompt_msg = PromptMessage(prompt=prompt, timestamp=time.time())
+        carrier = CarrierMessage(content=prompt_msg)
         
         # Publish message
         await broker.publish(
-            message,
+            carrier,
             channel="prompts:global",
         )
         print(f"Published prompt: {prompt}")
