@@ -28,6 +28,7 @@ dependencies = [
     "nvidia-nvtx-cu12>=12.6.77 ; sys_platform == 'linux'",
     "opencv-python>=4.11.0.86",
     "pillow>=11.2.1",
+    "psutil>=7.0.0",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "redis>=6.0.0",
