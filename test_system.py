@@ -138,7 +138,8 @@ def start_pipeline(
     mode: str = typer.Option("fake", help="Diffusion mode: fake or sdxs"),
     camera_id: int = typer.Option(0, help="Camera device ID"),
     display_backend: str = typer.Option("opencv", help="Display backend: opencv, pygame, headless"),
-    debug: bool = typer.Option(False, help="Enable debug logging")
+    debug: bool = typer.Option(False, help="Enable debug logging"),
+    duration: int = typer.Option(0, help="Run for a specific duration in seconds (0 for infinite)")
 ):
     """Start the complete processing pipeline"""
     
@@ -180,6 +181,14 @@ def start_pipeline(
         time.sleep(2)  # Give each component time to initialize
     
     console.print("[green]✓ Pipeline started successfully![/green]")
+    
+    if duration > 0:
+        console.print(f"[yellow]Running for {duration} seconds...[/yellow]")
+        time.sleep(duration)
+        console.print("[yellow]Stopping pipeline...[/yellow]")
+        manager.stop_all()
+        return
+
     console.print("[yellow]Press Ctrl+C to stop all components[/yellow]")
     
     try:
@@ -244,7 +253,7 @@ def test_simple(
     
     # Start pipeline in fake mode
     try:
-        start_pipeline(mode="fake", display_backend=display_backend, debug=True)
+        start_pipeline(mode="fake", display_backend=display_backend, debug=True, duration=10)
     except KeyboardInterrupt:
         pass
     finally:
@@ -266,7 +275,7 @@ def test_full(
     
     # Start pipeline in SDXS mode
     try:
-        start_pipeline(mode="sdxs", display_backend=display_backend, debug=True)
+        start_pipeline(mode="sdxs", display_backend=display_backend, debug=True, duration=10)
     except KeyboardInterrupt:
         pass
     finally:

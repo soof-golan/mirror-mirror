@@ -2,6 +2,9 @@ import logging
 import time
 from contextlib import AsyncExitStack
 import cv2
+import asyncio
+from typing import AsyncGenerator
+
 from faststream.redis import RedisBroker
 from pydantic_settings import BaseSettings
 from tenacity import retry, retry_if_exception_type, wait_exponential, stop_after_attempt
@@ -22,6 +25,53 @@ class Config(BaseSettings):
 
 
 config = Config()
+
+
+async def run_camera_loop(cap: cv2.VideoCapture) -> AsyncGenerator[CarrierMessage, None]:
+    """
+    Main camera loop as an async generator.
+    Captures frames and yields them as CarrierMessages.
+    """
+    frame_interval = 1.0 / config.fps
+    last_frame_time = 0
+    frames_published = 0
+    start_time = time.time()
+
+    while True:
+        current_time = time.time()
+        
+        # Rate limiting
+        if current_time - last_frame_time < frame_interval:
+            await asyncio.sleep(0.001)  # non-blocking sleep
+            continue
+            
+        success, frame = cap.read()
+        if not success:
+            logger.warning("Failed to capture frame, retrying...")
+            continue
+
+        try:
+            encoded_frame = encode_frame(frame)
+            message = FrameMessage(
+                frame=encode_bytes(encoded_frame),
+                timestamp=current_time,
+                camera_id=config.camera_id
+            )
+
+            yield CarrierMessage(content=message)
+            
+            last_frame_time = current_time
+            frames_published += 1
+            
+            # Log status every 100 frames
+            if frames_published > 0 and frames_published % 100 == 0:
+                elapsed = current_time - start_time
+                fps = frames_published / elapsed if elapsed > 0 else 0
+                logger.info(f"Published {frames_published} frames, actual FPS: {fps:.2f}")
+            
+        except Exception as e:
+            logger.error(f"Error processing frame: {e}", exc_info=True)
+            continue
 
 
 @retry(
@@ -53,53 +103,14 @@ async def main():
         logger.info(
             f"Camera {config.camera_id} opened: {actual_width}x{actual_height} @ {actual_fps}fps"
         )
-        
-        frame_interval = 1.0 / config.fps
-        last_frame_time = 0
-        frames_published = 0
-        start_time = time.time()
 
-        while True:
-            current_time = time.time()
-            
-            # Rate limiting
-            if current_time - last_frame_time < frame_interval:
-                continue
-                
-            success, frame = cap.read()
-            if not success:
-                logger.warning("Failed to capture frame, retrying...")
-                continue
-
-            try:
-                encoded_frame = encode_frame(frame)
-                message = FrameMessage(
-                    frame=encode_bytes(encoded_frame),
-                    timestamp=current_time,
-                    camera_id=config.camera_id
-                )
-
-                await broker.publish(
-                    message=CarrierMessage(content=message),
-                    channel=f"frames:camera:{config.camera_id}",
-                )
-                
-                last_frame_time = current_time
-                frames_published += 1
-                
-                # Log status every 100 frames
-                if frames_published % 100 == 0:
-                    elapsed = current_time - start_time
-                    fps = frames_published / elapsed if elapsed > 0 else 0
-                    logger.info(f"Published {frames_published} frames, actual FPS: {fps:.2f}")
-                
-            except Exception as e:
-                logger.error(f"Error processing frame: {e}", exc_info=True)
-                continue
+        async for message in run_camera_loop(cap):
+            await broker.publish(
+                message=message,
+                channel=f"frames:camera:{config.camera_id}",
+            )
 
 
 if __name__ == "__main__":
-    import asyncio
-
     logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
