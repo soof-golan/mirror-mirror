@@ -71,3 +71,22 @@ cd ~/dev/soof-golan/mirror-mirror/
 git pull
 uv sync
 ```
+
+ 
+We're targeting Jetson Orin NX.
+I have a few protoype quality files that implement core idea of Mirror Mirror.
+Help me continue implementation.
+
+run tests against the actuall hardware.
+
+# Architecture:
+
+Local Redis Broker: (add a docker compose to run it on the device)
+Using FastStream for piping messages between components
+Each component in its own small python script, sharing api shapes with a common imported module
+The Diffusion module accepts both embedded latents and prompts
+The Prompts should come from a VAD -> STT -> Rephrading (English to image genration descriptions) -> Tokenzation -> Embedding 
+Images should come from Camera (cv2) -> preprocessing (crop resize to_tensor) -> ControlNet -> Encoding To Latent
+Diffusion subscribes to both Image and Prompt streams (memoizes the prompt) -> Diffusion -> Decodeing -> Denormalization -> Postprocessing (resize, crop, to_tensor) 
+Display module subscribes to the processed images and displays to the screen
+
