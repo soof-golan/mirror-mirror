@@ -137,6 +137,7 @@ def stop_redis():
 def start_pipeline(
     mode: str = typer.Option("fake", help="Diffusion mode: fake or sdxs"),
     camera_id: int = typer.Option(0, help="Camera device ID"),
+    display_backend: str = typer.Option("opencv", help="Display backend: opencv, pygame, headless"),
     debug: bool = typer.Option(False, help="Enable debug logging")
 ):
     """Start the complete processing pipeline"""
@@ -144,12 +145,19 @@ def start_pipeline(
     # Set logging level
     log_level = "DEBUG" if debug else "INFO"
     
+    # Select display component based on backend
+    display_module = {
+        "opencv": "mirror_mirror.display",
+        "pygame": "mirror_mirror.pygame_display", 
+        "headless": "mirror_mirror.headless_display"
+    }.get(display_backend, "mirror_mirror.display")
+    
     components = [
         ("camera", ["uv", "run", "python", "-m", "mirror_mirror.camera_server"], {"CAMERA_ID": str(camera_id)}),
         ("latent_encoder", ["uv", "run", "python", "-m", "mirror_mirror.latent_encoder"], {}),
         ("diffusion", ["uv", "run", "python", "-m", "mirror_mirror.diffusion_server"], {"MODE": mode}),
         ("latent_decoder", ["uv", "run", "python", "-m", "mirror_mirror.latent_decoder"], {}),
-        ("display", ["uv", "run", "python", "-m", "mirror_mirror.display"], {}),
+        ("display", ["uv", "run", "python", "-m", display_module], {}),
     ]
     
     src_path = Path("src")
@@ -222,9 +230,11 @@ def status():
 
 
 @app.command()
-def test_simple():
+def test_simple(
+    display_backend: str = typer.Option("headless", help="Display backend: opencv, pygame, headless")
+):
     """Run a simple test with fake diffusion"""
-    console.print("[blue]Running simple test with fake diffusion...[/blue]")
+    console.print(f"[blue]Running simple test with fake diffusion (display: {display_backend})...[/blue]")
     
     # Start Redis
     if not start_redis():
@@ -234,7 +244,7 @@ def test_simple():
     
     # Start pipeline in fake mode
     try:
-        start_pipeline(mode="fake", debug=True)
+        start_pipeline(mode="fake", display_backend=display_backend, debug=True)
     except KeyboardInterrupt:
         pass
     finally:
@@ -242,9 +252,11 @@ def test_simple():
 
 
 @app.command() 
-def test_full():
+def test_full(
+    display_backend: str = typer.Option("headless", help="Display backend: opencv, pygame, headless")
+):
     """Run full test with real diffusion (requires GPU)"""
-    console.print("[blue]Running full test with SDXS diffusion...[/blue]")
+    console.print(f"[blue]Running full test with SDXS diffusion (display: {display_backend})...[/blue]")
     
     # Start Redis
     if not start_redis():
@@ -254,7 +266,7 @@ def test_full():
     
     # Start pipeline in SDXS mode
     try:
-        start_pipeline(mode="sdxs", debug=True)
+        start_pipeline(mode="sdxs", display_backend=display_backend, debug=True)
     except KeyboardInterrupt:
         pass
     finally:
