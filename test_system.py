@@ -268,8 +268,8 @@ def publish_prompt(prompt: str):
     
     try:
         result = subprocess.run([
-            "uv", "run", "python", "-m", "mirror_mirror.prompt_publisher"
-        ], input=prompt, text=True, capture_output=True)
+            "uv", "run", "python", "-m", "mirror_mirror.prompt_publisher", prompt
+        ], capture_output=True, text=True)
         
         if result.returncode == 0:
             console.print("[green]✓ Prompt published[/green]")

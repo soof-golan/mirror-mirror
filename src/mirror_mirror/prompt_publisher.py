@@ -39,16 +39,15 @@ async def publish_prompt(prompt: str):
 
 
 async def main():
-    """Interactive prompt publisher"""
-    print("Prompt Publisher - Enter prompts to send to the diffuser")
-    print("Type 'exit' to quit")
+    """CLI prompt publisher - pass prompt as argument"""
+    import sys
     
-    while True:
-        user_input = input("Enter a prompt: ")
-        if user_input.lower() == "exit":
-            break
-        
-        await publish_prompt(user_input)
+    if len(sys.argv) < 2:
+        print("Usage: python -m mirror_mirror.prompt_publisher 'your prompt here'")
+        sys.exit(1)
+    
+    prompt = " ".join(sys.argv[1:])
+    await publish_prompt(prompt)
 
 
 if __name__ == "__main__":
