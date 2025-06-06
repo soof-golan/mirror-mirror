@@ -41,6 +41,7 @@ def test_camera(camera_id: int = 0):
     # Capture frames
     frame_count = 0
     start_time = time.time()
+    elapsed = 0
     
     print("Capturing frames... Press 'q' to quit")
     
@@ -82,6 +83,9 @@ def test_camera(camera_id: int = 0):
     cap.release()
     cv2.destroyAllWindows()
     
+    # Calculate final elapsed time
+    end_time = time.time()
+    elapsed = end_time - start_time
     final_fps = frame_count / elapsed if elapsed > 0 else 0
     print(f"✅ Test completed: {frame_count} frames in {elapsed:.1f}s ({final_fps:.1f} FPS)")
     
