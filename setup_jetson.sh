@@ -60,13 +60,13 @@ else
     echo "✅ Docker: $(docker --version)"
 fi
 
-# Check Docker Compose
-if ! command_exists docker-compose; then
-    echo "📦 Installing Docker Compose..."
+# Check Docker Compose (V2)
+if ! docker compose version >/dev/null 2>&1; then
+    echo "📦 Installing Docker Compose plugin..."
     sudo apt-get update
-    sudo apt-get install -y docker-compose
+    sudo apt-get install -y docker-compose-plugin
 fi
-echo "✅ Docker Compose: $(docker-compose --version)"
+echo "✅ Docker Compose: $(docker compose version)"
 
 # Check CUDA
 echo ""

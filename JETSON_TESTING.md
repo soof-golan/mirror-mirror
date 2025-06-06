@@ -90,7 +90,7 @@ python test_system.py start-redis
 python debug_jetson.py test-components
 
 # Check Redis status
-docker-compose ps redis
+docker compose ps redis
 ```
 
 **2.2 Test Camera Server**
@@ -204,8 +204,8 @@ sudo systemctl status docker
 sudo systemctl start docker
 
 # Check Redis container
-docker-compose ps
-docker-compose logs redis
+docker compose ps
+docker compose logs redis
 ```
 
 **Permission denied:**

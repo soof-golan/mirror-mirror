@@ -21,8 +21,8 @@ if ! command_exists docker; then
     exit 1
 fi
 
-if ! command_exists docker-compose; then
-    echo "❌ Docker Compose not found. Please install Docker Compose."
+if ! docker compose version >/dev/null 2>&1; then
+    echo "❌ Docker Compose not found. Please install Docker Compose plugin."
     exit 1
 fi
 

@@ -223,10 +223,10 @@ uv run python test_system.py start-pipeline --mode=fake
 **Redis connection issues:**
 ```bash
 # Check Redis status
-docker-compose ps redis
+docker compose ps redis
 
 # View Redis logs
-docker-compose logs redis
+docker compose logs redis
 ```
 
 ## Future Enhancements

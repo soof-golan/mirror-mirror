@@ -105,7 +105,7 @@ def start_redis():
     console.print("[blue]Starting Redis...[/blue]")
     try:
         result = subprocess.run(
-            ["docker-compose", "up", "-d", "redis"],
+            ["docker", "compose", "up", "-d", "redis"],
             capture_output=True,
             text=True,
             check=True
@@ -123,7 +123,7 @@ def stop_redis():
     console.print("[blue]Stopping Redis...[/blue]")
     try:
         subprocess.run(
-            ["docker-compose", "down"],
+            ["docker", "compose", "down"],
             capture_output=True,
             text=True,
             check=True
@@ -202,7 +202,7 @@ def status():
     # Check Redis
     try:
         result = subprocess.run(
-            ["docker-compose", "ps", "redis"],
+            ["docker", "compose", "ps", "redis"],
             capture_output=True,
             text=True
         )
