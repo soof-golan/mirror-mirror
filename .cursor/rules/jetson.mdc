@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are working from a MacOS computer, you should develop software here, commit it and push.
+To run the software you need to run it on a the Jetson Computer, at `ssh -XC soof@soof-jetson.tail6f38f.ts.net`
+
+the repo is cloned remotely on ~/dev/soof-golan/mirror-mirror
+
+pull changes with 
+
+```
+ssh -X soof@soof-jetson.tail6f38f.ts.net "cd ~/dev/soof-golan/mirror-mirror && git pull"
+```
+
+Run commands with: 
+
+```
+ssh -X soof@soof-jetson.tail6f38f.ts.net "cd ~/dev/soof-golan/mirror-mirror && export PATH=\$PATH:/home/soof/.local/bin && timeout 30 uv run python your command"
+```
