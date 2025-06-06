@@ -60,3 +60,14 @@ All components use environment variables for configuration or default values:
 - `CAMERA_ID`: Camera device ID (default: 0)
 - `FPS`: Frame rate for camera capture (default: 24)
 - `FEED_NAME`: Feed identifier (default: "main")
+
+# Development
+
+To develop on the Jetson Orin NX device, use the following commands to sync the latest code from the repository:
+
+```bash
+ssh -XC soof@soof-jetson.tail6f38f.ts.net
+cd ~/dev/soof-golan/mirror-mirror/
+git pull
+uv sync
+```
