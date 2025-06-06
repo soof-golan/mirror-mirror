@@ -6,14 +6,18 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
+from mirror_mirror.models import decode_bytes
+
 logger = logging.getLogger(__name__)
 
 
-def decode_frame(frame: bytes) -> npt.NDArray[np.uint8]:
-    """Decode JPEG bytes to numpy array"""
+def decode_frame(frame: str) -> npt.NDArray[np.uint8]:
+    """Decode base64 JPEG string to numpy array"""
     try:
+        # Decode base64 string to bytes
+        frame_bytes = decode_bytes(frame)
         # Convert bytes to PIL Image
-        image = PIL.Image.open(io.BytesIO(frame)).convert("RGB")
+        image = PIL.Image.open(io.BytesIO(frame_bytes)).convert("RGB")
         # Convert to numpy array
         return np.array(image, dtype=np.uint8)
     except Exception as e:

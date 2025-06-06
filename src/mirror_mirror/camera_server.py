@@ -8,7 +8,7 @@ from tenacity import retry, retry_if_exception_type, wait_exponential, stop_afte
 
 from mirror_mirror.common import log_errors
 from mirror_mirror.decode import encode_frame
-from mirror_mirror.models import FrameMessage, CarrierMessage
+from mirror_mirror.models import FrameMessage, CarrierMessage, encode_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ async def main():
             try:
                 encoded_frame = encode_frame(frame)
                 message = FrameMessage(
-                    frame=encoded_frame,
+                    frame=encode_bytes(encoded_frame),
                     timestamp=current_time,
                     camera_id=config.camera_id
                 )

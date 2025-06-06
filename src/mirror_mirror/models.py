@@ -1,4 +1,5 @@
 from typing import Literal
+import base64
 import numpy as np
 import numpy.typing as npt
 
@@ -7,7 +8,7 @@ from pydantic import BaseModel, Field
 
 class FrameMessage(BaseModel):
     tag: Literal["frame"] = "frame"
-    frame: bytes  # JPEG encoded frame
+    frame: str  # Base64 encoded JPEG frame
     timestamp: float
     camera_id: int = 0
 
@@ -20,14 +21,14 @@ class PromptMessage(BaseModel):
 
 class AudioMessage(BaseModel):
     tag: Literal["audio"] = "audio"
-    audio_data: bytes  # Raw audio bytes
+    audio_data: str  # Base64 encoded audio bytes
     sample_rate: int
     timestamp: float
 
 
 class LatentsMessage(BaseModel):
     tag: Literal["latents"] = "latents"
-    latents: bytes  # Serialized numpy array
+    latents: str  # Base64 encoded serialized numpy array
     shape: tuple[int, ...]
     dtype: str
     timestamp: float
@@ -36,7 +37,7 @@ class LatentsMessage(BaseModel):
 
 class EmbeddingMessage(BaseModel):
     tag: Literal["embedding"] = "embedding"
-    embedding: bytes  # Serialized numpy array
+    embedding: str  # Base64 encoded serialized numpy array
     shape: tuple[int, ...]
     dtype: str
     text: str
@@ -45,7 +46,7 @@ class EmbeddingMessage(BaseModel):
 
 class ProcessedFrameMessage(BaseModel):
     tag: Literal["processed_frame"] = "processed_frame"
-    frame: bytes  # JPEG encoded processed frame
+    frame: str  # Base64 encoded JPEG processed frame
     timestamp: float
     processing_time: float
 
@@ -61,11 +62,22 @@ class CarrierMessage(BaseModel):
     ) = Field(discriminator="tag")
 
 
-def serialize_array(arr: npt.NDArray) -> tuple[bytes, tuple[int, ...], str]:
-    """Serialize a numpy array to bytes with metadata"""
-    return arr.tobytes(), arr.shape, str(arr.dtype)
+def encode_bytes(data: bytes) -> str:
+    """Encode bytes to base64 string for JSON serialization"""
+    return base64.b64encode(data).decode('utf-8')
 
 
-def deserialize_array(data: bytes, shape: tuple[int, ...], dtype: str) -> npt.NDArray:
-    """Deserialize bytes back to numpy array"""
-    return np.frombuffer(data, dtype=dtype).reshape(shape)
+def decode_bytes(data: str) -> bytes:
+    """Decode base64 string back to bytes"""
+    return base64.b64decode(data.encode('utf-8'))
+
+
+def serialize_array(arr: npt.NDArray) -> tuple[str, tuple[int, ...], str]:
+    """Serialize a numpy array to base64 string with metadata"""
+    return encode_bytes(arr.tobytes()), arr.shape, str(arr.dtype)
+
+
+def deserialize_array(data: str, shape: tuple[int, ...], dtype: str) -> npt.NDArray:
+    """Deserialize base64 string back to numpy array"""
+    bytes_data = decode_bytes(data)
+    return np.frombuffer(bytes_data, dtype=dtype).reshape(shape)
