@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import cv2
 from faststream import FastStream
