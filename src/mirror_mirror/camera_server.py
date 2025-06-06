@@ -56,6 +56,8 @@ async def main():
         
         frame_interval = 1.0 / config.fps
         last_frame_time = 0
+        frames_published = 0
+        start_time = time.time()
 
         while True:
             current_time = time.time()
@@ -83,9 +85,16 @@ async def main():
                 )
                 
                 last_frame_time = current_time
+                frames_published += 1
+                
+                # Log status every 100 frames
+                if frames_published % 100 == 0:
+                    elapsed = current_time - start_time
+                    fps = frames_published / elapsed if elapsed > 0 else 0
+                    logger.info(f"Published {frames_published} frames, actual FPS: {fps:.2f}")
                 
             except Exception as e:
-                logger.error(f"Error processing frame: {e}")
+                logger.error(f"Error processing frame: {e}", exc_info=True)
                 continue
 
 

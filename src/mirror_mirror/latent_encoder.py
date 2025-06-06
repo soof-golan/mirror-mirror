@@ -13,7 +13,8 @@ from mirror_mirror.models import (
     CarrierMessage, 
     FrameMessage, 
     LatentsMessage, 
-    serialize_array
+    serialize_array,
+    decode_bytes
 )
 
 logger = logging.getLogger(__name__)
@@ -37,11 +38,15 @@ class LatentEncoder:
         self.vae = None
         self.device = config.device
         self.dtype = getattr(torch, config.torch_dtype)
+        self.frames_processed = 0
+        self.total_processing_time = 0.0
         
     def initialize(self):
         """Initialize the VAE model"""
         if self.vae is None:
             logger.info(f"Loading VAE from {config.model_repo}")
+            start_time = time.time()
+            
             pipe = StableDiffusionPipeline.from_pretrained(
                 config.model_repo, 
                 torch_dtype=self.dtype
@@ -49,15 +54,23 @@ class LatentEncoder:
             self.vae = pipe.vae
             self.vae.to(self.device)
             self.vae.eval()
-            logger.info("VAE loaded successfully")
+            
+            load_time = time.time() - start_time
+            logger.info(f"VAE loaded successfully in {load_time:.2f}s - device: {self.device}, dtype: {self.dtype}")
+            
+            # Log model info
+            total_params = sum(p.numel() for p in self.vae.parameters())
+            logger.info(f"VAE model: {total_params:,} parameters")
     
     @torch.inference_mode()
     def encode_frame(self, frame_bytes: bytes) -> tuple[bytes, tuple[int, ...], str]:
         """Encode a frame to latents"""
         self.initialize()
+        encoding_start = time.time()
         
         # Decode frame from bytes
         frame = decode_frame(frame_bytes)
+        logger.debug(f"Decoded frame: {frame.shape} {frame.dtype}")
         
         # Preprocess image
         # Convert to PIL format and resize
@@ -95,6 +108,17 @@ class LatentEncoder:
         
         # Convert to numpy and serialize
         latents_np = latents.cpu().float().numpy()
+        
+        # Track statistics
+        encoding_time = time.time() - encoding_start
+        self.frames_processed += 1
+        self.total_processing_time += encoding_time
+        
+        if self.frames_processed % 50 == 0:
+            avg_time = self.total_processing_time / self.frames_processed
+            logger.info(f"Encoded {self.frames_processed} frames, avg time: {avg_time:.3f}s")
+        
+        logger.debug(f"Encoded frame to latents {latents_np.shape} in {encoding_time:.3f}s")
         return serialize_array(latents_np)
 
 
@@ -112,14 +136,21 @@ async def encode_camera_frames(
     """Process camera frames and convert to latents"""
     
     if not isinstance(carrier.content, FrameMessage):
+        logger.debug(f"Ignoring non-frame message: {type(carrier.content)}")
         return None
     
     frame_msg = carrier.content
     start_time = time.time()
     
+    logger.debug(f"Processing frame from camera {frame_msg.camera_id} at {frame_msg.timestamp}")
+    
     try:
+        # Decode and validate frame data
+        frame_bytes = decode_bytes(frame_msg.frame)
+        logger.debug(f"Frame data: {len(frame_bytes)} bytes")
+        
         # Encode frame to latents
-        latents_data, shape, dtype = encoder.encode_frame(frame_msg.frame)
+        latents_data, shape, dtype = encoder.encode_frame(frame_bytes)
         
         processing_time = time.time() - start_time
         
@@ -138,7 +169,7 @@ async def encode_camera_frames(
         return CarrierMessage(content=latents_msg)
         
     except Exception as e:
-        logger.error(f"Failed to encode frame: {e}")
+        logger.error(f"Failed to encode frame: {e}", exc_info=True)
         return None
 
 
