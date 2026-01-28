@@ -2,6 +2,8 @@
 
 An art installation that transforms live camera feeds into AI-generated artwork using voice-guided prompts.
 
+![output](https://github.com/user-attachments/assets/75daa31b-0be1-4d1c-8152-15086188926d)
+
 ## Architecture
 
 ```mermaid
