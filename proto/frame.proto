@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package generated.messages;
+
+message Frame {
+  bytes data = 1;       // JPEG encoded frame
+  double timestamp = 2;
+  uint32 width = 3;
+  uint32 height = 4;
+  map<string, double> timestamps = 5;
+}
+
+message Audio {
+  bytes data = 1;       // PCM float32
+  double timestamp = 2;
+  uint32 sample_rate = 3;
+  uint32 channels = 4;
+}
+
+message Prompt {
+  string text = 1;
+  double timestamp = 2;
+}
