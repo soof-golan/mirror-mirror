@@ -459,17 +459,6 @@ wheels = [
 ]
 
 [[package]]
-name = "dearpygui"
-version = "2.1.1"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/09/c23ce6671e2339f4170620b5626bc80070611f6b8f1c6c000dfa1936062f/dearpygui-2.1.1-cp310-cp310-macosx_10_6_x86_64.whl", hash = "sha256:4cb99ac64125c4b454eb79c52c37c92e64d8dcd1646d14bb23e061930124f090", size = 2101049, upload-time = "2025-11-14T14:47:37.127Z" },
-    { url = "https://files.pythonhosted.org/packages/63/cc/e99f0d8a9ae3f85febd3dc29c68c38af714c7ab232469beee2ca8f5ee1f1/dearpygui-2.1.1-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:fa3b3f2617d01b3de93bc4632129d5155d34aba708c72df05af1eaf0369a6394", size = 1895437, upload-time = "2025-11-14T14:47:46Z" },
-    { url = "https://files.pythonhosted.org/packages/96/48/245cb4b280d8b146dfb0cfe57a93cbd52ff5fea1ae634b676c46281d1596/dearpygui-2.1.1-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:886e3b4f91f9e75de0aa1fd5a51ea1cd862f047fbb1edd5bdcbec3d29c66f5cb", size = 2640351, upload-time = "2025-11-14T14:47:52.055Z" },
-    { url = "https://files.pythonhosted.org/packages/ad/ba/169f29ceec2a404e66577a0ed408785a7cf2e75748205f80d24c48dc5ad5/dearpygui-2.1.1-cp310-cp310-win_amd64.whl", hash = "sha256:5bf454047f7dc7c77c98721fd98aaaf276fa82f954699c95dfe80916a7060136", size = 1808682, upload-time = "2025-11-14T14:47:23.635Z" },
-]
-
-[[package]]
 name = "decorator"
 version = "5.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1316,7 +1305,6 @@ dependencies = [
     { name = "betterproto2" },
     { name = "betterproto2-compiler" },
     { name = "bitsandbytes" },
-    { name = "dearpygui" },
     { name = "diffusers" },
     { name = "grpcio-tools" },
     { name = "huggingface-hub" },
@@ -1373,7 +1361,6 @@ requires-dist = [
     { name = "betterproto2", specifier = ">=0.9.1" },
     { name = "betterproto2-compiler", specifier = ">=0.9.0" },
     { name = "bitsandbytes", specifier = ">=0.49.0" },
-    { name = "dearpygui", specifier = ">=2.1.1" },
     { name = "diffusers", specifier = ">=0.36.0" },
     { name = "grpcio-tools", specifier = ">=1.62.3" },
     { name = "huggingface-hub", specifier = ">=0.36.0" },
