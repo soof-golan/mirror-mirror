@@ -478,15 +478,6 @@ wheels = [
 ]
 
 [[package]]
-name = "einops"
-version = "0.8.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e5/81/df4fbe24dff8ba3934af99044188e20a98ed441ad17a274539b74e82e126/einops-0.8.1.tar.gz", hash = "sha256:de5d960a7a761225532e0f1959e5315ebeafc0cd43394732f103ca44b9837e84", size = 54805, upload-time = "2025-02-09T03:17:00.434Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/62/9773de14fe6c45c23649e98b83231fffd7b9892b6cf863251dc2afa73643/einops-0.8.1-py3-none-any.whl", hash = "sha256:919387eb55330f5757c6bea9165c5ff5cfe63a642682ea788a6d472576d81737", size = 64359, upload-time = "2025-02-09T03:17:01.998Z" },
-]
-
-[[package]]
 name = "facexlib"
 version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -637,6 +628,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/f8/0a/a3871375c7b9727edaeeea994bfff7c63ff7804c9829c19309ba2e058807/greenlet-3.3.0-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:b01548f6e0b9e9784a2c99c5651e5dc89ffcbe870bc5fb2e5ef864e9cc6b5dcb", size = 276379, upload-time = "2025-12-04T14:23:30.498Z" },
     { url = "https://files.pythonhosted.org/packages/43/ab/7ebfe34dce8b87be0d11dae91acbf76f7b8246bf9d6b319c741f99fa59c6/greenlet-3.3.0-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:349345b770dc88f81506c6861d22a6ccd422207829d2c854ae2af8025af303e3", size = 597294, upload-time = "2025-12-04T14:50:06.847Z" },
     { url = "https://files.pythonhosted.org/packages/a4/39/f1c8da50024feecd0793dbd5e08f526809b8ab5609224a2da40aad3a7641/greenlet-3.3.0-cp312-cp312-manylinux_2_24_ppc64le.manylinux_2_28_ppc64le.whl", hash = "sha256:e8e18ed6995e9e2c0b4ed264d2cf89260ab3ac7e13555b8032b25a74c6d18655", size = 607742, upload-time = "2025-12-04T14:57:42.349Z" },
+    { url = "https://files.pythonhosted.org/packages/77/cb/43692bcd5f7a0da6ec0ec6d58ee7cddb606d055ce94a62ac9b1aa481e969/greenlet-3.3.0-cp312-cp312-manylinux_2_24_s390x.manylinux_2_28_s390x.whl", hash = "sha256:c024b1e5696626890038e34f76140ed1daf858e37496d33f2af57f06189e70d7", size = 622297, upload-time = "2025-12-04T15:07:13.552Z" },
     { url = "https://files.pythonhosted.org/packages/75/b0/6bde0b1011a60782108c01de5913c588cf51a839174538d266de15e4bf4d/greenlet-3.3.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:047ab3df20ede6a57c35c14bf5200fcf04039d50f908270d3f9a7a82064f543b", size = 609885, upload-time = "2025-12-04T14:26:02.368Z" },
     { url = "https://files.pythonhosted.org/packages/49/0e/49b46ac39f931f59f987b7cd9f34bfec8ef81d2a1e6e00682f55be5de9f4/greenlet-3.3.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:2d9ad37fc657b1102ec880e637cccf20191581f75c64087a549e66c57e1ceb53", size = 1567424, upload-time = "2025-12-04T15:04:23.757Z" },
     { url = "https://files.pythonhosted.org/packages/05/f5/49a9ac2dff7f10091935def9165c90236d8f175afb27cbed38fb1d61ab6b/greenlet-3.3.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:83cd0e36932e0e7f36a64b732a6f60c2fc2df28c351bae79fbaf4f8092fe7614", size = 1636017, upload-time = "2025-12-04T14:27:29.688Z" },
@@ -1116,94 +1108,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nunchaku"
-version = "1.1.0+torch2.9"
-source = { url = "https://github.com/nunchaku-tech/nunchaku/releases/download/v1.1.0/nunchaku-1.1.0+torch2.9-cp312-cp312-linux_x86_64.whl" }
-dependencies = [
-    { name = "accelerate", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "diffusers", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "einops", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "huggingface-hub", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "peft", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "protobuf", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "sentencepiece", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "torchvision", version = "0.24.1", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "platform_machine == 'aarch64' and platform_python_implementation == 'CPython' and sys_platform == 'linux'" },
-    { name = "torchvision", version = "0.24.1+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(platform_machine != 'aarch64' and sys_platform == 'linux') or (platform_python_implementation != 'CPython' and sys_platform == 'linux') or sys_platform == 'win32'" },
-    { name = "transformers", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-]
-wheels = [
-    { url = "https://github.com/nunchaku-tech/nunchaku/releases/download/v1.1.0/nunchaku-1.1.0+torch2.9-cp312-cp312-linux_x86_64.whl", hash = "sha256:73bcb93a4e5e0be9651f965b02e41e41d89157e0d178442e369ffcddcd7a8525" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "accelerate", specifier = ">=1.9" },
-    { name = "accelerate", marker = "extra == 'ci'", specifier = "==1.9" },
-    { name = "breathe", marker = "extra == 'docs'" },
-    { name = "controlnet-aux", marker = "extra == 'ci'", specifier = "==0.0.10" },
-    { name = "controlnet-aux", marker = "extra == 'demo'" },
-    { name = "controlnet-aux", marker = "extra == 'dev'" },
-    { name = "controlnet-aux", marker = "extra == 'full'" },
-    { name = "datasets", marker = "extra == 'ci'", specifier = "==3.6" },
-    { name = "datasets", marker = "extra == 'dev'", specifier = "<4" },
-    { name = "diffusers", specifier = ">=0.35.1" },
-    { name = "diffusers", marker = "extra == 'ci'", git = "https://github.com/huggingface/diffusers?rev=262ce19" },
-    { name = "einops" },
-    { name = "facexlib", marker = "extra == 'ci'", specifier = "==0.3" },
-    { name = "facexlib", marker = "extra == 'dev'" },
-    { name = "facexlib", marker = "extra == 'full'" },
-    { name = "furo", marker = "extra == 'docs'" },
-    { name = "gradio", marker = "extra == 'demo'", specifier = "==5.39" },
-    { name = "graphviz", marker = "extra == 'docs'" },
-    { name = "huggingface-hub", specifier = ">=0.34" },
-    { name = "huggingface-hub", marker = "extra == 'ci'", specifier = "==0.34" },
-    { name = "image-gen-aux", marker = "extra == 'ci'", git = "https://github.com/asomoza/image_gen_aux.git?rev=e08ae3d" },
-    { name = "image-gen-aux", marker = "extra == 'demo'", git = "https://github.com/asomoza/image_gen_aux.git" },
-    { name = "image-gen-aux", marker = "extra == 'dev'", git = "https://github.com/asomoza/image_gen_aux.git" },
-    { name = "image-gen-aux", marker = "extra == 'full'", git = "https://github.com/asomoza/image_gen_aux.git" },
-    { name = "insightface", marker = "extra == 'ci'", specifier = "==0.7.3" },
-    { name = "insightface", marker = "extra == 'dev'" },
-    { name = "insightface", marker = "extra == 'full'" },
-    { name = "ipykernel", marker = "extra == 'docs'" },
-    { name = "jupyter", marker = "extra == 'docs'" },
-    { name = "myst-parser", marker = "extra == 'docs'" },
-    { name = "nbsphinx", marker = "extra == 'docs'" },
-    { name = "onnxruntime", marker = "extra == 'ci'", specifier = "==1.22.1" },
-    { name = "onnxruntime", marker = "extra == 'dev'" },
-    { name = "onnxruntime", marker = "extra == 'full'" },
-    { name = "opencv-python", marker = "extra == 'ci'", specifier = "==4.11.0.86" },
-    { name = "opencv-python", marker = "extra == 'dev'" },
-    { name = "opencv-python", marker = "extra == 'full'" },
-    { name = "peft", specifier = ">=0.17" },
-    { name = "peft", marker = "extra == 'ci'", specifier = "==0.17" },
-    { name = "pre-commit", marker = "extra == 'dev'" },
-    { name = "protobuf" },
-    { name = "pytest", marker = "extra == 'ci'", specifier = "==8.4.2" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-rerunfailures", marker = "extra == 'ci'", specifier = "==16.0.1" },
-    { name = "pytest-rerunfailures", marker = "extra == 'dev'" },
-    { name = "sentencepiece" },
-    { name = "spaces", marker = "extra == 'demo'" },
-    { name = "sphinx", marker = "extra == 'docs'" },
-    { name = "sphinx-book-theme", marker = "extra == 'docs'" },
-    { name = "sphinx-copybutton", marker = "extra == 'docs'" },
-    { name = "sphinx-rtd-theme", marker = "extra == 'docs'" },
-    { name = "sphinx-tabs", marker = "extra == 'docs'" },
-    { name = "sphinxawesome-theme", marker = "extra == 'docs'" },
-    { name = "sphinxcontrib-mermaid", marker = "extra == 'docs'" },
-    { name = "sphinxext-rediraffe", marker = "extra == 'docs'" },
-    { name = "timm", marker = "extra == 'ci'", specifier = "==1.0.19" },
-    { name = "timm", marker = "extra == 'dev'" },
-    { name = "timm", marker = "extra == 'full'" },
-    { name = "torchmetrics", marker = "extra == 'ci'", specifier = "==1.8" },
-    { name = "torchmetrics", marker = "extra == 'dev'" },
-    { name = "torchvision", specifier = ">=0.20" },
-    { name = "transformers", specifier = ">=4.54" },
-    { name = "transformers", marker = "extra == 'ci'", specifier = "==4.54" },
-]
-provides-extras = ["ci", "demo", "dev", "docs", "full"]
-
-[[package]]
 name = "nvidia-cublas"
 version = "13.0.0.19"
 source = { registry = "https://pypi.org/simple" }
@@ -1369,7 +1273,6 @@ dependencies = [
     { name = "grpcio-tools" },
     { name = "huggingface-hub" },
     { name = "librosa" },
-    { name = "nunchaku", marker = "sys_platform == 'linux'" },
     { name = "opencv-python" },
     { name = "pydantic-settings" },
     { name = "pypeln" },
@@ -1414,7 +1317,6 @@ requires-dist = [
     { name = "grpcio-tools", specifier = ">=1.62.3" },
     { name = "huggingface-hub", specifier = ">=0.36.0" },
     { name = "librosa", specifier = ">=0.11.0" },
-    { name = "nunchaku", marker = "sys_platform == 'linux'", url = "https://github.com/nunchaku-tech/nunchaku/releases/download/v1.1.0/nunchaku-1.1.0+torch2.9-cp312-cp312-linux_x86_64.whl" },
     { name = "opencv-python", specifier = ">=4.12.0.88" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "pypeln", specifier = ">=0.4.9" },
@@ -1468,27 +1370,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727, upload-time = "2025-04-19T11:48:59.673Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469, upload-time = "2025-04-19T11:48:57.875Z" },
-]
-
-[[package]]
-name = "peft"
-version = "0.18.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "accelerate", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "huggingface-hub", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "numpy", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "packaging", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "psutil", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "pyyaml", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "safetensors", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "torch", version = "2.9.1+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "tqdm", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-    { name = "transformers", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/48/147b3ea999560b40a34fd78724c7777aa9d18409c2250bdcaf9c4f2db7fc/peft-0.18.1.tar.gz", hash = "sha256:2dd0d6bfce936d1850e48aaddbd250941c5c02fc8ef3237cd8fd5aac35e0bae2", size = 635030, upload-time = "2026-01-09T13:08:01.136Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/14/b4e3f574acf349ae6f61f9c000a77f97a3b315b4bb6ad03791e79ae4a568/peft-0.18.1-py3-none-any.whl", hash = "sha256:0bf06847a3551e3019fc58c440cffc9a6b73e6e2962c95b52e224f77bbdb50f1", size = 556960, upload-time = "2026-01-09T13:07:55.865Z" },
 ]
 
 [[package]]
@@ -2227,16 +2108,6 @@ wheels = [
 ]
 
 [[package]]
-name = "sentencepiece"
-version = "0.2.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/15/15/2e7a025fc62d764b151ae6d0f2a92f8081755ebe8d4a64099accc6f77ba6/sentencepiece-0.2.1.tar.gz", hash = "sha256:8138cec27c2f2282f4a34d9a016e3374cd40e5c6e9cb335063db66a0a3b71fad", size = 3228515, upload-time = "2025-08-12T07:00:51.718Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/fa/d3d5ebcba3cb9e6d3775a096251860c41a6bc53a1b9461151df83fe93255/sentencepiece-0.2.1-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:99f955df238021bf11f0fc37cdb54fd5e5b5f7fd30ecc3d93fb48b6815437167", size = 1316273, upload-time = "2025-08-12T06:59:44.476Z" },
-    { url = "https://files.pythonhosted.org/packages/04/88/14f2f4a2b922d8b39be45bf63d79e6cd3a9b2f248b2fcb98a69b12af12f5/sentencepiece-0.2.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0cdfecef430d985f1c2bcbfff3defd1d95dae876fbd0173376012d2d7d24044b", size = 1387881, upload-time = "2025-08-12T06:59:46.09Z" },
-]
-
-[[package]]
 name = "setuptools"
 version = "80.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2530,9 +2401,9 @@ dependencies = [
     { name = "typing-extensions", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
 wheels = [
-    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-manylinux_2_28_aarch64.whl" },
-    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl" },
-    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-win_amd64.whl" },
+    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:6e7f84cb10c7e7d9f862c318f056d64840544ab4f0bcbf8cf7ed6047fe04051f" },
+    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:e70e1b18881e6b3c1ce402d0a989da39f956a3a057526e03c354df23d704ce9b" },
+    { url = "https://download.pytorch.org/whl/cu130/torch-2.9.1%2Bcu130-cp312-cp312-win_amd64.whl", hash = "sha256:cd3232a562ad2a2699d48130255e1b24c07dfe694a40dcd24fad683c752de121" },
 ]
 
 [[package]]

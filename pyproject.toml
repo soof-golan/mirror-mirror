@@ -17,7 +17,6 @@ dependencies = [
     "grpcio-tools>=1.62.3",
     "huggingface-hub>=0.36.0",
     "librosa>=0.11.0",
-    "nunchaku ; sys_platform == 'linux'",
     "opencv-python>=4.12.0.88",
     "pydantic-settings>=2.12.0",
     "pypeln>=0.4.9",
@@ -52,7 +51,6 @@ torch = [
 torchvision = [
     { index = "pytorch-cuda", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
-nunchaku = { url = "https://github.com/nunchaku-tech/nunchaku/releases/download/v1.1.0/nunchaku-1.1.0+torch2.9-cp312-cp312-linux_x86_64.whl" }
 
 [tool.ruff]
 line-length = 100
